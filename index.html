@@ -1,62 +1,79 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <script src="jquery.js"></script>
+    <script src="data_generator.js"></script>
+    <script src="bootstrap/js/bootstrap.js"></script>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+  </head>
 
-<head>
-  <script src="jquery.js"></script>
-  <script src="data_generator.js"></script>
-  <script src="bootstrap/js/bootstrap.js"></script>
-  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-</head>
+  <body>
+    <script>
 
-<body>
-  <script>
-    $(document).ready(function () {      
-      var $body = $('body');
-      var html = '';
-      $body.html(html);
-      $('body').append('<div class="container"></div>');
-      var $container = $('.container');
-      $container.append('<h1>Twittler</h1>');
-      $container.append('<ul style="margin: 0; list-style-type: none;"></ul>');
-      var $moreTweets = $('<button type="button" class="btn btn-primary" id="populateTweets">Show More Tweets</button>');
-      var $returnToMain = $('<button type="button" class="btn btn-secondary" id="navToMain">Return to Main</button>');
-      $moreTweets.prependTo("ul");
-      var lastKnownTweet = 0;
+      $(document).ready(function(){
+        var $body = $('body');
+        $body.append('<div></div>');
+        
+        var $div = $('div');
+        $div.attr('class', 'container');
 
-      var showUserTweets = function () {
-        var className = '.' + ($(this).parent().attr("class"));
-        $('ul > li').hide();
-        $(className).show();
-        $returnToMain.prependTo("ul");
-        $("#navToMain").on("click", returnToMainStream);
-        $moreTweets.hide();
-        $returnToMain.show();
-      }
+        var $container = $('.container');
+        $container.append('<h1></h1>');
 
-      var returnToMainStream = function () {
-        $('li').show();
-        $moreTweets.show();
+        var $h1 = $('h1');
+        $h1.text('Twittler');
+
+        $container.append('<ul></ul>');
+        var $ul = $('ul');
+        $ul.attr('style', 'margin: 0; list-style-type: none');
+
+        var $showMoreTweets = $(
+          '<button type="button" class="btn btn-primary" id="showMoreTweets">Show More Tweets</button>');
+        var $returnToMain = $(
+          '<button type="button" class="btn btn-secondary" id="returnToMain">Return to Main</button>');
+        
+        $showMoreTweets.prependTo('ul');
+        $returnToMain.prependTo('ul');
         $returnToMain.hide();
-      }
 
-      var revealTweets = function () {
-        $('li').show();
-        var index = streams.home.length - 1;
-        for( var i = lastKnownTweet; i < index ; i++) {
-          var tweet = streams.home[i];
-          var $tweet = $('<li class="' + tweet.user + '">' + 'i = ' + i + ' and lastKnownTweet = ' + lastKnownTweet + ' ' + '<a href="##">@' + tweet.user + '</a>' + ' ' + (tweet.created_at).toUTCString() + ' ' + ': ' + tweet.message + '</li>');
-          $tweet.prependTo("ul");
-        }
-        lastKnownTweet = index;
-        $moreTweets.prependTo("ul");
-        $("a").on("click", showUserTweets);
-      }
+        var lastKnownTweet = 0;
 
-      revealTweets();
-      $("#populateTweets").on("click", revealTweets);
+        var showOnlyUserTweets = function(){
+          var userNameClass = '.' + ($(this).parent().attr('class'));
+          $('li').hide();
+          $(userNameClass).show();
+          $returnToMain.prependTo('ul');
+          $showMoreTweets.hide();
+          $returnToMain.show();
+        };
 
-    });
-  </script>
-</body>
+        var returnToMainFeed = function(){
+          $('li').show();
+          $showMoreTweets.show();
+          $returnToMain.hide();
+        };
 
+        var showAllTweets = function(){
+          var index = streams.home.length - 1;
+          for (var i = lastKnownTweet; i < index; i++) {
+            var tweet = streams.home[i];
+            var $tweet = $('<li class="' + tweet.user + '"><a href="##">@' + tweet.user + '</a> ' + (tweet.created_at)
+              .toUTCString() + ' &middot; ' + tweet.message + '</li>');
+            $tweet.prependTo('ul');
+          }
+          $showMoreTweets.prependTo('ul');
+          lastKnownTweet = index;
+          $('li').show();
+          $("a").on("click", showOnlyUserTweets);
+        };
+
+        $("#showMoreTweets").on("click", showAllTweets);
+        $('#returnToMain').on("click", returnToMainFeed);
+        
+        showAllTweets();
+
+      });
+
+    </script>
+  </body>
 </html>
